@@ -7,6 +7,9 @@ from django.http import Http404
 from django.urls import reverse
 from django.db.models import F
 from django.views import generic
+from django.http import JsonResponse
+from django.views import View
+from .services import ExternalApiClient, ExternalAPIServiceError
 
 # def index(request):
 #     latest_question_list = Question.objects.order_by("-pub_date")[:5]
