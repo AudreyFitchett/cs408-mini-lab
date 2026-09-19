@@ -37,13 +37,53 @@ class DetailView(generic.DetailView):
     template_name = "detail.html"
 
 
-# def results(request, question_id):
-#     question = get_object_or_404(Question, pk=question_id)
-#     return render(request, "results.html", {"question": question})
+# def assignments(request):
+#     latest_question_list = Question.objects.order_by("-pub_date")[:5]
+#     template = loader.get_template("assignments.html")
+#     context = {"latest_question_list": latest_question_list}
+#     return HttpResponse(template.render(context, request))
+
+def assignments(request):
+    client = ExternalApiClient()
+    error_message = None
+    assignments = []
+
+    try:
+        # Calls the external API service method created earlier
+        assignments = client.fetch_all_courses()
+    except ExternalAPIServiceError as e:
+        error_message = "Unable to load items at this time. Please try again later."
+
+    # Pass the API data into the template context dictionary
+    context = {
+        "assignments": assignments,
+        "error_message": error_message,
+    }
+
+    return render(request, "assignments.html", context)
+
+
+
+# class temporary(generic.ListView):
+#     template_name = "assignments.html"
+#     context_object_name = "course_list"
+#     def get(self, request):
+#         client = ExternalApiClient()
+        
+#         # Get requested page number from request query params (?page=2)
+#         page = request.GET.get('page', 1)
+
+#         try:
+#             paginated_data = client.fetch_all_courses()
+            
+#             return JsonResponse(paginated_data, status=200)
+#         except ExternalAPIServiceError as e:
+#             return JsonResponse({"error": str(e)}, status=502)
     
-class ResultsView(generic.DetailView):
-    model = Question
-    template_name = "results.html"
+# class ResultsView(generic.ListView):
+#     model = Question
+#     template_name = "results.html"
+    
 
 
 def vote(request, question_id):
@@ -66,4 +106,6 @@ def vote(request, question_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-        return HttpResponseRedirect(reverse("fullstack:results", args=(question.id,)))
+        return HttpResponseRedirect(reverse("fullstack:assignments", args=(question.id,)))
+    
+

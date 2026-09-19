@@ -6,17 +6,13 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
-    <title>My test page</title>
+    <title>Home page</title>
   </head>
   <body>
-    {% if latest_question_list %}
-        <ul>
-        {% for question in latest_question_list %}
-            <li><a href="{% url 'fullstack:detail' question.id %}">{{ question.question_text }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No polls are available.</p>
-    {% endif %}
+    <h1>Welcome to your assignment tracker!</h1>
+    <p>Ready to feel the existential dread of knowing you have a lot to do but not wanting to do it? 
+        Then <a href="/fullstack/assignments">click right here!</a>
+    </p>
+
   </body>
 </html>

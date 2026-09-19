@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
+    <title>Assignment Tracker</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <h1>{{ question.question_text }}</h1>
+
+    <h1>Items from External API</h1>
+
+    <!-- Display error message if the API call failed -->
+    {% if error_message %}
+        <p class="error">{{ error_message }}</p>
+    {% else %}
+        <!-- Check if items list is empty -->
+        {% if courses %}
+            <div class="course-container">
+                {% for course in courses %}
+                    <div class="course-card">
+                        <h3>{{ course.name }}</h3>
+                        <p><strong>Price:</strong> ${{ course.price }}</p>
+                        <p>{{ course.description }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No courses found.</p>
+        {% endif %}
+    {% endif %}
+
+    
+    <h1>Table template</h1>
+    <table>
+      <tr>
+        <th>Due Date</th>
+        <th>Course</th>
+        <th>Assignment</th>
+      </tr>
+      
+      
+    </table>
+
+    </body>
+</html>

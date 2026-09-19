@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Python Debugger: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/minilab/manage.py",
+            "args": ["runserver"],
+            "console": "integratedTerminal",
+            "django": true
+        }
+    ]
+}
