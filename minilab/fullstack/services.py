@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 import json
 from types import SimpleNamespace
+from .models import Assignment, Course
 from datetime import date, datetime
 from django.http import JsonResponse, HttpResponseBadRequest
 
@@ -42,7 +43,7 @@ class ExternalApiClient:
             raise ExternalAPIServiceError(f"Network error while reaching external API: {err}")
         
     def fetch_all_courses(canvas) -> list:
-        all_courses = []
+        # all_courses = []
         next_url = f"{canvas.base_url}/api/v1/courses"
 
         while next_url:
@@ -58,7 +59,12 @@ class ExternalApiClient:
                 for i in range(len(data)):
                     if("name" in data[i]):
                         temp = json.loads(json.dumps(data[i]), object_hook=SimpleNamespace)
-                        all_courses.append(temp)
+                        c = Course()
+                        c.name = temp.name
+                        c.id = temp.id
+                        c.date_created = temp.created_at
+                        c.save()
+                        # all_courses.append(temp)
                         # all_courses.append(data[i]["name", "id", "end_at"])
 
                 # Update next_url for the next iteration (None when no more pages)
@@ -69,7 +75,7 @@ class ExternalApiClient:
             except requests.exceptions.RequestException as err:
                 raise ExternalAPIServiceError(f"Error fetching paginated data: {err}")
 
-        return all_courses
+        # return all_courses
     
     def fetch_all_assignments(canvas) -> list:
         all_assignments = []

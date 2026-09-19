@@ -15,6 +15,5 @@ class Assignment(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=200)
-    id = models.CharField(max_length=200)
+    id = models.CharField(max_length=200, primary_key = True)
     date_created = models.CharField(max_length=200)
-    html_url = models.CharField(max_length=200)
