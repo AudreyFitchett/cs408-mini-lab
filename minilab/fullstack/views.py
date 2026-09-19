@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from .models import Question, Choice
+from .models import Assignment, Course
 from django.http import Http404
 from django.urls import reverse
 from django.db.models import F
@@ -21,9 +21,9 @@ class IndexView(generic.ListView):
     template_name = "index.html"
     context_object_name = "latest_question_list"
 
-    def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by("-pub_date")[:5]
+    # def get_queryset(self):
+    #     """Return the last five published questions."""
+    #     return Question.objects.order_by("-pub_date")[:5]
 
 # def detail(request, question_id):
 #     try:
@@ -33,7 +33,7 @@ class IndexView(generic.ListView):
 #     return render(request, "detail.html", {"question": question})
     
 class DetailView(generic.DetailView):
-    model = Question
+    model = Assignment
     template_name = "detail.html"
 
 
@@ -46,11 +46,13 @@ class DetailView(generic.DetailView):
 def assignments(request):
     client = ExternalApiClient()
     error_message = None
-    assignments = []
+    #assignments = []
+    courses = Course.objects.order_by("-pub_date")
 
     try:
         # Calls the external API service method created earlier
-        assignments = client.fetch_all_courses()
+        #assignments = client.fetch_all_assignments()
+        client.fetch_all_assignments()
     except ExternalAPIServiceError as e:
         error_message = "Unable to load items at this time. Please try again later."
 
@@ -86,26 +88,26 @@ def assignments(request):
     
 
 
-def vote(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    try:
-        selected_choice = question.choice_set.get(pk=request.POST["choice"])
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
-        return render(
-            request,
-            "detail.html",
-            {
-                "question": question,
-                "error_message": "You didn't select a choice.",
-            },
-        )
-    else:
-        selected_choice.votes = F("votes") + 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse("fullstack:assignments", args=(question.id,)))
+# def vote(request, question_id):
+#     question = get_object_or_404(Question, pk=question_id)
+#     try:
+#         selected_choice = question.choice_set.get(pk=request.POST["choice"])
+#     except (KeyError, Choice.DoesNotExist):
+#         # Redisplay the question voting form.
+#         return render(
+#             request,
+#             "detail.html",
+#             {
+#                 "question": question,
+#                 "error_message": "You didn't select a choice.",
+#             },
+#         )
+#     else:
+#         selected_choice.votes = F("votes") + 1
+#         selected_choice.save()
+#         # Always return an HttpResponseRedirect after successfully dealing
+#         # with POST data. This prevents data from being posted twice if a
+#         # user hits the Back button.
+#         return HttpResponseRedirect(reverse("fullstack:assignments", args=(question.id,)))
     
 

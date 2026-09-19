@@ -1,5 +1,8 @@
 import requests
 from django.conf import settings
+import json
+from types import SimpleNamespace
+from datetime import date, datetime
 from django.http import JsonResponse, HttpResponseBadRequest
 
 
@@ -54,7 +57,9 @@ class ExternalApiClient:
                 #trying to get around access restricted items
                 for i in range(len(data)):
                     if("name" in data[i]):
-                        all_courses.append(data[i]["name"])
+                        temp = json.loads(json.dumps(data[i]), object_hook=SimpleNamespace)
+                        all_courses.append(temp)
+                        # all_courses.append(data[i]["name", "id", "end_at"])
 
                 # Update next_url for the next iteration (None when no more pages)
                 if("next" in response.links):
@@ -68,29 +73,34 @@ class ExternalApiClient:
     
     def fetch_all_assignments(canvas) -> list:
         all_assignments = []
-        next_url = f"{canvas.base_url}/api/v1/courses/:id/assignments"
+        all_courses = ExternalApiClient.fetch_all_courses(canvas)
+        next_url = f"{canvas.base_url}/api/v1/courses/{all_courses[0].id}/assignments"
 
-        while next_url:
-            try:
-                response = requests.get(next_url, headers=canvas._get_headers(), timeout=canvas.timeout)
-                response.raise_for_status()
-                data = response.json()
+        for i in range(len(all_courses)):
+            next_url = f"{canvas.base_url}/api/v1/courses/{all_courses[i].id}/assignments"
+            if(all_courses[i].created_at is None or all_courses[i].created_at >= "2026-01-01"):
+                while next_url:
+                    try:
+                        response = requests.get(next_url, headers=canvas._get_headers(), timeout=canvas.timeout)
+                        response.raise_for_status()
+                        data = response.json()
 
-                # Extend result list with items from current page
-                # this didn't work
-                # all_courses.extend(data.get("results", []))
-                #trying to get around access restricted items
-                for i in range(len(data)):
-                    if("name" in data[i]):
-                        all_assignments.append(data[i]["name"])
+                        # Extend result list with items from current page
+                        # this didn't work
+                        # all_courses.extend(data.get("results", []))
+                        #trying to get around access restricted items
+                        for i in range(len(data)):
+                            if("name" in data[i]):
+                                temp = json.loads(json.dumps(data[i]), object_hook=SimpleNamespace)
+                                all_assignments.append(temp)
 
-                # Update next_url for the next iteration (None when no more pages)
-                if("next" in response.links):
-                    next_url = response.links["next"]["url"]
-                else:
-                    next_url = None
-            except requests.exceptions.RequestException as err:
-                raise ExternalAPIServiceError(f"Error fetching paginated data: {err}")
+                        # Update next_url for the next iteration (None when no more pages)
+                        if("next" in response.links):
+                            next_url = response.links["next"]["url"]
+                        else:
+                            next_url = None
+                    except requests.exceptions.RequestException as err:
+                        raise ExternalAPIServiceError(f"Error fetching paginated data: {err}")
 
         return all_assignments
     
