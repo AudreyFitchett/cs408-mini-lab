@@ -77,14 +77,14 @@ class ExternalApiClient:
 
         # return all_courses
     
-    def fetch_all_assignments(canvas) -> list:
-        all_assignments = []
-        all_courses = ExternalApiClient.fetch_all_courses(canvas)
-        next_url = f"{canvas.base_url}/api/v1/courses/{all_courses[0].id}/assignments"
+    def fetch_all_assignments(canvas):
+        if(Course.objects.all() is None):
+            ExternalApiClient.fetch_all_courses(canvas)
+        courses = Course.objects.order_by("name")
 
-        for i in range(len(all_courses)):
-            next_url = f"{canvas.base_url}/api/v1/courses/{all_courses[i].id}/assignments"
-            if(all_courses[i].created_at is None or all_courses[i].created_at >= "2026-01-01"):
+        for course in courses:
+            next_url = f"{canvas.base_url}/api/v1/courses/{course.id}/assignments"
+            if(course.date_created is None or course.date_created >= "2026-01-01"):
                 while next_url:
                     try:
                         response = requests.get(next_url, headers=canvas._get_headers(), timeout=canvas.timeout)
@@ -98,7 +98,20 @@ class ExternalApiClient:
                         for i in range(len(data)):
                             if("name" in data[i]):
                                 temp = json.loads(json.dumps(data[i]), object_hook=SimpleNamespace)
-                                all_assignments.append(temp)
+                                a = Assignment()
+                                a.name = temp.name
+                                a.course_id = temp.course_id
+                                a.html_url = temp.html_url
+                                #TODO: format the date correctly under else
+                                if(hasattr(temp, "due_at") and temp.due_at is not None):
+                                    a.due_date = temp.due_at
+                                else:
+                                    a.due_date = "2027-01-01"
+
+                                if(hasattr(temp, "submission") and temp.submission is not None):
+                                    a.submitted = True
+
+                                a.save()
 
                         # Update next_url for the next iteration (None when no more pages)
                         if("next" in response.links):
@@ -108,7 +121,6 @@ class ExternalApiClient:
                     except requests.exceptions.RequestException as err:
                         raise ExternalAPIServiceError(f"Error fetching paginated data: {err}")
 
-        return all_assignments
     
    
     def create_item(canvas, payload: dict) -> dict:

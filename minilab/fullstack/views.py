@@ -52,13 +52,14 @@ def assignments(request):
         # Calls the external API service method created earlier
         #assignments = client.fetch_all_assignments()
         client.fetch_all_courses()
-        courses = Course.objects.order_by("name")
+        client.fetch_all_assignments()
+        assignments = Assignment.objects.order_by("course_id")
     except ExternalAPIServiceError as e:
         error_message = "Unable to load items at this time. Please try again later."
 
     # Pass the API data into the template context dictionary
     context = {
-        "courses": courses,
+        "assignments": assignments,
         "error_message": error_message,
     }
 

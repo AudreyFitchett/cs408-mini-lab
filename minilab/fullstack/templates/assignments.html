@@ -16,13 +16,13 @@
         <p class="error">{{ error_message }}</p>
     {% else %}
         <!-- Check if items list is empty -->
-        {% if courses %}
+        {% if assignments %}
             <div class="assignment-container">
-                {% for course in courses %}
-                    <div class="course-card">
-                        <h3>{{ course.name }}</h3>
-                        <p><strong>Price:</strong> ${{ course.price }}</p>
-                        <p>{{ course.description }}</p>
+                {% for assignments in assignments %}
+                    <div class="assignment-card">
+                        <h3>{{ assignment.name }}</h3>
+                        <p><strong>Due Date:</strong> {{ assignment.due_date}}</p>
+                        <p>{{ assignment.submission }}</p>
                     </div>
                 {% endfor %}
             </div>
