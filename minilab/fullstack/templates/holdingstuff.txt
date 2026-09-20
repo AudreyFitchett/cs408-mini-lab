@@ -1,0 +1,26 @@
+    {% else %}
+        <!-- Check if items list is empty -->
+        {% if assignments %}
+            <div class="assignment-container">
+                {% for assignment in assignments %}
+                    <div class="assignment-card">
+                        {{assignment.get_course_name}}
+                        <h3>{{ assignment.name }}</h3>
+                        <p><strong>Due Date:</strong> {{ assignment.due_date}}</p>
+                        <p>{{ assignment.submission }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No courses found.</p>
+        {% endif %}
+    {% endif %}
+
+    
+    <h1>Table template</h1>
+    <table>
+      <tr>
+        <th>Due Date</th>
+        <th>Course</th>
+        <th>Assignment</th>
+      </tr>

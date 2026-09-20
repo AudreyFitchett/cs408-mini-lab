@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fullstack.apps.FullstackConfig',
     'debug_toolbar',
+    "django_tables2",
 ]
 
 MIDDLEWARE = [
@@ -66,7 +67,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["minilab/fullstack/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
