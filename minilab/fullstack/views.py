@@ -15,6 +15,9 @@ from django.views import View
 from .services import ExternalApiClient, ExternalAPIServiceError
 from django_tables2 import SingleTableView
 from .tables import AssignmentTable
+from .filters import AssignmentFilter
+from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
 
 # def index(request):
 #     latest_question_list = Question.objects.order_by("-pub_date")[:5]
@@ -77,7 +80,28 @@ class DetailView(generic.DetailView):
     # return render(request, "assignments.html", context)
         
 
-class AssignmentListView(SingleTableView):
+# class AssignmentListView(SingleTableView):
+#     client = ExternalApiClient()
+#     error_message = None
+#     assignments = Assignment.objects.order_by("course_id")
+#     courses = Course.objects.order_by("id")
+
+#     try:
+#         # Calls the external API service method created earlier
+#         #assignments = client.fetch_all_assignments()
+#         if(not Course.objects.exists()):
+#             client.fetch_all_courses()
+#         #always check for new assignments
+#         client.fetch_all_assignments()
+#         assignments = Assignment.objects.order_by("course_id")
+#         courses = Course.objects.order_by("id")
+#     except ExternalAPIServiceError as e:
+#         error_message = e
+#     model = Assignment
+#     table_class = AssignmentTable
+#     template_name = 'assignments.html'
+
+class FilteredAssignmentListView(SingleTableMixin, FilterView):
     client = ExternalApiClient()
     error_message = None
     assignments = Assignment.objects.order_by("course_id")
@@ -97,49 +121,36 @@ class AssignmentListView(SingleTableView):
     model = Assignment
     table_class = AssignmentTable
     template_name = 'assignments.html'
+    filterset_class = AssignmentFilter
 
-
-
-# class temporary(generic.ListView):
-#     template_name = "assignments.html"
-#     context_object_name = "course_list"
-#     def get(self, request):
-#         client = ExternalApiClient()
-        
-#         # Get requested page number from request query params (?page=2)
-#         page = request.GET.get('page', 1)
-
-#         try:
-#             paginated_data = client.fetch_all_courses()
-            
-#             return JsonResponse(paginated_data, status=200)
-#         except ExternalAPIServiceError as e:
-#             return JsonResponse({"error": str(e)}, status=502)
-    
-# class ResultsView(generic.ListView):
-#     model = Question
-#     template_name = "results.html"
-    
-
-
-# def filter_by_course(request, course_id):
+# def course_filter(request, course_id, template = 'assignments.html'):
 #     course = get_object_or_404(Course, pk=course_id)
 #     try:
-#         selected_course = assignment.filter(pk=request.POST["course"])
+#         selected_course = Assignment.filter(pk=request.GET["course"])
+
+#         context = {
+#             "assignments": selected_course,
+#             "course": course,
+#         }
+#         return render(
+#             "assignment.html",
+#             context,
+#         )
+
 #     except (KeyError, Course.DoesNotExist):
 #         # display original table.
 #         return render(
 #             request,
 #             "assignment.html",
 #             {
-#                 "question": question,
+#                 "assignment": selected_course,
 #                 "error_message": "You didn't select a choice.",
 #             },
 #         )
-#     else:
+    
 #         # Always return an HttpResponseRedirect after successfully dealing
 #         # with POST data. This prevents data from being posted twice if a
 #         # user hits the Back button.
-#         return HttpResponseRedirect(reverse("fullstack:assignments", args=(course.id,)))
+#     return HttpResponseRedirect(reverse("fullstack:assignments"))
     
 

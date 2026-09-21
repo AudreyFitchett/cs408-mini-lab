@@ -16,11 +16,7 @@ from .services import ExternalApiClient, ExternalAPIServiceError
 from django_filters import FilterSet
 
 
-class AssignmentTable(tables.Table):
+class AssignmentFilter(FilterSet):
     class Meta:
         model = Assignment
-        template_name = "django_tables2/bootstrap.html"
-        fields = ("course","name", "due_date", "submission")
-
-
-    
+        fields = {"course": ["exact"]}

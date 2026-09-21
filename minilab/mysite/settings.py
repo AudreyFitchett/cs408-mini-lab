@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'fullstack.apps.FullstackConfig',
     'debug_toolbar',
     "django_tables2",
+    'django_filters',
+    'bootstrap3'
 ]
 
 MIDDLEWARE = [

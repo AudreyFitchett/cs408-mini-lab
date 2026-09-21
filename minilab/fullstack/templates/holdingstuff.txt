@@ -16,6 +16,8 @@
         {% endif %}
     {% endif %}
 
+
+
     
     <h1>Table template</h1>
     <table>
@@ -24,3 +26,12 @@
         <th>Course</th>
         <th>Assignment</th>
       </tr>
+
+
+
+      {% if filter %}
+    <form action="" method="get" class="form form-inline">
+        {% bootstrap_form filter.form layout='inline' %}
+        {% bootstrap_button 'filter' %}
+    </form>
+    {% endif %}
