@@ -13,7 +13,6 @@ class Assignment(models.Model):
     name = models.CharField(max_length=200)
     due_date = models.CharField(max_length=200)
     html_url = models.CharField(max_length=200)
-    #python says this is a nonnullable value. why?
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     submitted = False
     def __str__(self):
